@@ -496,6 +496,27 @@ export class PromptModal extends Modal {
         el.onClickEvent(() => this.close()),
       );
     });
+    
+    //EM DELETE
+    modalEl.addEventListener("keydown", async (ev: KeyboardEvent) => {
+      if(ev.code == "Enter"){
+        ev.preventDefault()
+        const result = await getMediaInfo(input.value);
+        if (result) {
+          if (this.view) {
+            await this.view.setInfo(result);
+            this.view.player?.once("ready", function () {
+              this.play();
+            });
+            this.close();
+          } else if (this.app.workspace.activeLeaf) {
+            openNewView(result, this.app.workspace.activeLeaf, this.plugin);
+            this.close();
+          } else new Notice("No activeLeaf found");
+        } else new Notice("Link not supported");
+      }
+    })
+    //EM DELETE
   }
 
   onClose() {

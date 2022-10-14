@@ -43,9 +43,21 @@ export const setRatioWidth = (
 
 export const insertToCursor = (str: string, view: MarkdownView) => {
   const { editor, app } = view;
-  const cursor = editor.getCursor("to");
+  // For the four inputs below, with unselected text they all put the timestamp after the cursor
+  // but behave differently for selected text
+  const cursor = editor.getCursor("to"); // ORIGINAL CHECK HERE // This puts timestamp at start of selected text
+  // const cursor = editor.getCursor("from"); // EM ADDED // This puts timestamp at start of selected text
+  // const cursor = editor.getCursor("head"); // EM ADDED // This puts timestamp at end of selected text
+  // const cursor = editor.getCursor("anchor"); // EM ADDED // This puts timestamp at end of selected text
+  // console.log(cursor) // EM ADDED
   editor.replaceRange(str, cursor, cursor);
-  if (app.isMobile)
+  // editor.setCursor(cursor.line,str.length)  // EM ADDED //this seems to work for placing the cursor at the end of the timestamp
+  // EM ADDED // but the .setCursor method is also used below
+  // EM ADDED // copy the setCursor line in the if statment below to run every time, not just in mobile app
+  editor.setCursor( // EM ADDED
+    editor.offsetToPos(editor.posToOffset(cursor) + str.length), // EM ADDED
+  ) // EM ADDED
+    if (app.isMobile)
     editor.setCursor(
       editor.offsetToPos(editor.posToOffset(cursor) + str.length),
     );
